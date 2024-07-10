@@ -322,9 +322,15 @@ namespace Depends.Core
                     }
                 }
 
-                // Ignore unversioned references like implicit SDK packages
+                // Ignore unversioned references like implicit SDK packages                                  
                 builder.WithEdges(analyzerResult.GetItems("PackageReference")
-                    .Where(x => x.Metadata.ContainsKey("Version"))
+                    // .Where(x => x.Metadata.ContainsKey("Version"))
+                    .ForEach(x => {
+                        if(!x.Metadata.ContainsKey("Version"))
+                        {
+                            x.Metadata["Version"] = "implicit";
+                        }
+                    })
                     .Select(x => new Edge(projectNode, libraryNodes[x.ItemSpec], x.Metadata["Version"])));
             }
 
