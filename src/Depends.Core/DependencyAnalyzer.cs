@@ -325,14 +325,7 @@ namespace Depends.Core
                 // ~~Ignore unversioned references like implicit SDK packages~~
                 // Handle implicit SDK packages by marking version as "implicit"
                 builder.WithEdges(analyzerResult.GetItems("PackageReference")
-                    // .Where(x => x.Metadata.ContainsKey("Version"))
-                    .ForEach(x => {
-                        if(!x.Metadata.ContainsKey("Version"))
-                        {
-                            x.Metadata["Version"] = "implicit";
-                        }
-                    })
-                    .Select(x => new Edge(projectNode, libraryNodes[x.ItemSpec], x.Metadata["Version"])));
+                    .Select(x => new Edge(projectNode, libraryNodes[x.ItemSpec], x.Metadata.TryGetValue("Version", out var value) ?  value : "implicit")));
             }
 
             var references = analyzerResult.References.Select(x => new AssemblyReferenceNode(Path.GetFileName(x)));
